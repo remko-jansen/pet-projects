@@ -63,12 +63,25 @@ namespace ImageShrinker
                     result = new BitmapImage(new Uri(path));
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = null;
             }
 
             return result;
+        }
+
+        private void ShrinkIt_Click(object sender, RoutedEventArgs e)
+        {
+            var path = InputImageFile.Text;
+            int requestedSize = 0;
+            int.TryParse(RequestedSize.Text, out requestedSize);
+
+            if (string.IsNullOrWhiteSpace(path) || requestedSize <= 0)
+                return;
+
+            var shrinker = new ImageShrinkHelper(path, requestedSize);
+            shrinker.DoShrink();
         }
     }
 }
