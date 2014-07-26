@@ -1,5 +1,6 @@
 ﻿using ImageShrinker;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace ImageShrinkerTests
 {
@@ -10,9 +11,9 @@ namespace ImageShrinkerTests
         public void Constructor_Should_Set_StepPercentage_To_Default()
         {
             // Arrange
-            var calc = new StepCalculator(1024, 640, 10);
+            var calc = new StepCalculator(10);
 
-            Assert.That(calc, Is.Not.Null);
+            calc.Should().Not.Be.Null();
         }
     }
 }
