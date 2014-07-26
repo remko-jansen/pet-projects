@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageShrinker", "ImageShrinker\ImageShrinker.csproj", "{A3941E5C-47F5-4CC0-BA7D-AA6369A8501E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageShrinkerTests", "ImageShrinkerTests\ImageShrinkerTests.csproj", "{FB15E0DB-A095-458B-988F-A7F7661070CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,10 @@ Global
 		{A3941E5C-47F5-4CC0-BA7D-AA6369A8501E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3941E5C-47F5-4CC0-BA7D-AA6369A8501E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3941E5C-47F5-4CC0-BA7D-AA6369A8501E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB15E0DB-A095-458B-988F-A7F7661070CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB15E0DB-A095-458B-988F-A7F7661070CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB15E0DB-A095-458B-988F-A7F7661070CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB15E0DB-A095-458B-988F-A7F7661070CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

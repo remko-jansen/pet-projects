@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -82,6 +83,24 @@ namespace ImageShrinker
 
             var shrinker = new ImageShrinkHelper(path, requestedSize);
             shrinker.DoShrink();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog
+            var dlg = new OpenFileDialog();
+
+            // Set filter for file extension and default file extension
+            dlg.DefaultExt = ".jpg";
+            dlg.Filter = "Images|*.jpg;*.jpeg|All Files|*.*";
+            dlg.CheckFileExists = true;
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                InputImageFile.Text = dlg.FileName;
+            }
+
         }
     }
 }

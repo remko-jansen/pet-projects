@@ -33,12 +33,7 @@ namespace ImageShrinker
 
         private Bitmap GetBitmap()
         {
-            var outStream = new MemoryStream();
-
-            ImageBuilder.Current.Build(_imageFilePath, outStream, new ResizeSettings());
-
-            outStream.Position = 0;
-            var bitmap = new Bitmap(outStream);
+            var bitmap = ImageBuilder.Current.Build(_imageFilePath, new ResizeSettings());
             return bitmap;
         }
 
