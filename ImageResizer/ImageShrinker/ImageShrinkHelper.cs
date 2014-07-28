@@ -27,8 +27,6 @@ namespace ImageShrinker
             {
                 var bmap = GetBitmap();
             }
-
-
         }
 
         private Bitmap GetBitmap()

@@ -27,6 +27,7 @@ namespace ImageShrinker
 
         public List<int> GetSteps(int start, int goal)
         {
+            return null;
         }
     }
 }

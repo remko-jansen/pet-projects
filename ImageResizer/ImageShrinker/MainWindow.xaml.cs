@@ -14,9 +14,14 @@ namespace ImageShrinker
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Model _model;
+
         public MainWindow()
         {
             InitializeComponent();
+            _model = new Model {RequestedSize = 1024};
+
+            DataContext = _model;
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -25,7 +30,7 @@ namespace ImageShrinker
 
             if (files.Length > 0)
             {
-                InputImageFile.Text = files[0];
+                _model.FilePath = files[0];
             }
         }
 
@@ -36,7 +41,6 @@ namespace ImageShrinker
                 e.Effects = DragDropEffects.None;
                 e.Handled = true;
             }
-
         }
 
         private void InputImageFile_TextChanged(object sender, TextChangedEventArgs e)
@@ -74,14 +78,10 @@ namespace ImageShrinker
 
         private void ShrinkIt_Click(object sender, RoutedEventArgs e)
         {
-            var path = InputImageFile.Text;
-            int requestedSize = 0;
-            int.TryParse(RequestedSize.Text, out requestedSize);
-
-            if (string.IsNullOrWhiteSpace(path) || requestedSize <= 0)
+            if (string.IsNullOrWhiteSpace(_model.FilePath) || _model.RequestedSize <= 0)
                 return;
 
-            var shrinker = new ImageShrinkHelper(path, requestedSize);
+            var shrinker = new ImageShrinkHelper(_model.FilePath, _model.RequestedSize);
             shrinker.DoShrink();
         }
 
@@ -98,7 +98,7 @@ namespace ImageShrinker
             var result = dlg.ShowDialog();
             if (result == true)
             {
-                InputImageFile.Text = dlg.FileName;
+                _model.FilePath = dlg.FileName;
             }
 
         }
