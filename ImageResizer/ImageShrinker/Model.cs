@@ -17,18 +17,18 @@ namespace ImageShrinker
         public string FilePath
         {
             get { return _filePath; }
-            set { Set("FilePath", ref _filePath, value); }
+            set { Set(() => FilePath, ref _filePath, value); }
         }
 
         public int RequestedSize
         {
             get { return _requestedSize; }
-            set { Set("RequestedSize", ref _requestedSize, value); }
+            set { Set(() => RequestedSize, ref _requestedSize, value); }
         }
 
         public List<int> PredefinedSizes {
             get { return _predefinedSizes; }
-            set { Set("PredefinedSizes", ref _predefinedSizes, value); }
+            set { Set(() => PredefinedSizes, ref _predefinedSizes, value); }
         }
     }
 }
