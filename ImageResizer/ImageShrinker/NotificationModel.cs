@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ImageShrinker
 {
@@ -39,16 +40,26 @@ namespace ImageShrinker
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public string GetPropertyName(LambdaExpression expression)
+        public string GetPropertyName<T>(Expression<Func<T>> expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException("expression");
+            }
+
             var memberExpression = expression.Body as MemberExpression;
             if (memberExpression == null)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentException("Expression is not a field or property.", "expression");
             }
 
-            return memberExpression.Member.Name;
-        }
+            var property = memberExpression.Member as PropertyInfo;
+            if (property == null)
+            {
+                throw new ArgumentException("Expression is not a property.", "expression");
+            }
 
+            return property.Name;
+        }
     }
 }
