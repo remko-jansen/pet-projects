@@ -3,6 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style TargetType="Control" x:Key="globalErrorTemplate">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                            Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource globalErrorTemplate}" />
+        <Style TargetType="CheckBox" BasedOn="{StaticResource globalErrorTemplate}" />
+        <Style TargetType="ComboBox" BasedOn="{StaticResource globalErrorTemplate}" />
     </Application.Resources>
 </Application>

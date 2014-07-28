@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:ImageShrinker="clr-namespace:ImageShrinker"
+        xmlns:local="clr-namespace:ImageShrinker"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance ImageShrinker:Model}"
+        d:DataContext="{d:DesignInstance local:Model}"
         Title="Image shrinker" Height="224" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
+
     <Grid Margin="0,0,0,0">
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="100" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <Image x:Name="ImagePreview" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Height="96" Margin="1,1,0,0"/>
@@ -14,9 +15,31 @@
         <Label Content="_Input image:" HorizontalAlignment="Left" Margin="115,8,0,0" VerticalAlignment="Top" Target="{Binding ElementName=InputImageFile, Mode=OneWay}"/>
         <TextBox x:Name="InputImageFile" HorizontalAlignment="Left" Height="23" Margin="196,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="306" TextChanged="InputImageFile_TextChanged" Text="{Binding FilePath}"/>
         <Label Content="_Resize longest side to:" HorizontalAlignment="Left" Margin="115,38,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.026,0.115" Target="{Binding ElementName=RequestedSize, Mode=OneWay}"/>
-        <ComboBox x:Name="RequestedSize" HorizontalAlignment="Left" Margin="247,42,0,0" VerticalAlignment="Top" Width="79" IsEditable="True" Text="{Binding RequestedSize}" ItemsSource="{Binding PredefinedSizes}"/>
+        <ComboBox x:Name="RequestedSize" HorizontalAlignment="Left" Margin="247,42,0,0" VerticalAlignment="Top" Width="79" IsEditable="True" ItemsSource="{Binding PredefinedSizes}">
+            <ComboBox.Text>
+                <Binding Path="RequestedSize" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </ComboBox.Text>
+        </ComboBox>
         <Button Content="Browse..." HorizontalAlignment="Left" Margin="517,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Name="ShrinkIt" Content="Shrink It" HorizontalAlignment="Left" Margin="517,154,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.253,0.136" Click="ShrinkIt_Click"/>
+        <Button x:Name="ShrinkIt" Content="Shrink It" HorizontalAlignment="Left" Margin="517,154,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.253,0.136" Click="ShrinkIt_Click">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="IsEnabled" Value="false" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ElementName=RequestedSize, Path=(Validation.HasError)}" Value="false" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="true" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Border BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="10,115,0,0" VerticalAlignment="Top" Width="582">
             <Border.BorderBrush>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
