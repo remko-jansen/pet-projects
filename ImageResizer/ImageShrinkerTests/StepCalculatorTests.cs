@@ -26,6 +26,26 @@ namespace ImageShrinkerTests
         }
 
         [Test]
+        public void GetSteps_Should_Get_Correct_Steps()
+        {
+            // Arrange
+            var calc = new StepCalculator(20);
+
+            var start = new Size(5000, 3750);
+
+            // Act
+            var result = calc.GetSteps(start, 2048);
+
+            // Assert
+            result.Count.Should().Be(5);
+            result[0].Should().Be(new Size(5000, 3750));
+            result[1].Should().Be(new Size(4000, 3000));
+            result[2].Should().Be(new Size(3200, 2400));
+            result[3].Should().Be(new Size(2560, 1920));
+            result[4].Should().Be(new Size(2048, 1536));
+        }
+
+        [Test]
         public void GetSteps_Should_Get_Correct_Steps_When_Width_Is_Largest()
         {
             // Arrange
@@ -341,9 +361,9 @@ namespace ImageShrinkerTests
             var result = calc.GetSteps(start, 640);
 
             // Assert
-            result.Count.Should().Be(3);
+            result.Count.Should().Be(4);
             result[0].Should().Be(new Size(1024, 768));
-            result[1].Should().Be(new Size(768, 576));
+            result[1].Should().Be(new Size(819, 614));
 
             ((double)result[1].Width / (double)result[0].Width).Should().Be.RoughlyEqualTo((100 - StepCalculator.DefaultStepPercentage) / 100.0, 0.0005);
         }
@@ -360,9 +380,9 @@ namespace ImageShrinkerTests
             var result = calc.GetSteps(start, 640);
 
             // Assert
-            result.Count.Should().Be(3);
+            result.Count.Should().Be(4);
             result[0].Should().Be(new Size(1024, 768));
-            result[1].Should().Be(new Size(768, 576));
+            result[1].Should().Be(new Size(819, 614));
 
             ((double)result[1].Width / (double)result[0].Width).Should().Be.RoughlyEqualTo((100 - StepCalculator.DefaultStepPercentage) / 100.0, 0.0005);
         }

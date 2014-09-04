@@ -8,7 +8,7 @@ namespace ImageShrinker
     {
         private int _stepPercentage;
 
-        public const int DefaultStepPercentage = 25;
+        public const int DefaultStepPercentage = 20;
         public const int MaxSteps = 100;
 
         public StepCalculator()
@@ -31,25 +31,26 @@ namespace ImageShrinker
         {
             var result = new List<Size> {startSize};
 
-            var isWidthLongestSide = startSize.Width >= startSize.Height;
-            var dontNeedToResize = isWidthLongestSide ? startSize.Width <= goalLongestSide : startSize.Height <= goalLongestSide;
+            var dontNeedToResize = Math.Max(startSize.Width, startSize.Height) <= goalLongestSide;
 
             if (dontNeedToResize)
                 return result;
 
-            var shrinkFactor = (100.0 - _stepPercentage) / 100.0;
-            var runningShrinkfactor = shrinkFactor;
+            var isWidthLongestSide = startSize.Width >= startSize.Height;
+
+            var stepShrinkFactor = 1.0 - (_stepPercentage / 100.0);
+            var runningShrinkfactor = stepShrinkFactor;
             bool done;
             do
             {
-                var nextSize = Scale(startSize, runningShrinkfactor);
-                runningShrinkfactor = runningShrinkfactor * shrinkFactor;
+                var nextSize = ScaleByFactor(startSize, runningShrinkfactor);
+                runningShrinkfactor = runningShrinkfactor * stepShrinkFactor;
 
                 done = isWidthLongestSide ? (nextSize.Width <= goalLongestSide) : (nextSize.Height <= goalLongestSide);
                 done |= result.Count == MaxSteps - 1;
 
                 if (done)
-                    nextSize = Scale(startSize, goalLongestSide);
+                    nextSize = ScaleToTargetSize(startSize, goalLongestSide);
 
                 result.Add(nextSize);
             } while (!done);
@@ -57,7 +58,7 @@ namespace ImageShrinker
             return result;
         }
 
-        private Size Scale(Size sizeIn, double factor)
+        private Size ScaleByFactor(Size sizeIn, double factor)
         {
             var scaledWidth = Convert.ToInt32(Math.Round(sizeIn.Width * factor));
             var scaledHeight = Convert.ToInt32(Math.Round(sizeIn.Height * factor));
@@ -66,13 +67,13 @@ namespace ImageShrinker
             return sizeOut;
         }
 
-        private Size Scale(Size sizeIn, int newLongestSide)
+        private Size ScaleToTargetSize(Size sizeIn, int newLongestSide)
         {
             var isWidthLongestSide = sizeIn.Width >= sizeIn.Height;
 
             var factor = isWidthLongestSide ? ((double)newLongestSide) / sizeIn.Width : ((double)newLongestSide) / sizeIn.Height;
 
-            var sizeOut = Scale(sizeIn, factor);
+            var sizeOut = ScaleByFactor(sizeIn, factor);
             return sizeOut;
         }
     }
