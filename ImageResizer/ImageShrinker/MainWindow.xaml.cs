@@ -58,15 +58,21 @@ namespace ImageShrinker
             }
         }
 
-        private BitmapImage GetImageFromFile(string path)
+        private BitmapFrame GetImageFromFile(string path)
         {
-            BitmapImage result = null;
+            BitmapFrame result = null;
+
             try
             {
-                if (File.Exists(path))
+                BitmapDecoder decoder;
+                using (var sourceStream = File.OpenRead(path))
                 {
-                    result = new BitmapImage(new Uri(path));
+                    // NOTE: Using BitmapCacheOption.OnLoad here will read the entire file into
+                    //       memory which allows us to dispose of the file stream immediately
+                    decoder = BitmapDecoder.Create(sourceStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
+
+                result = decoder.Frames[0];
             }
             catch (Exception)
             {
@@ -81,7 +87,7 @@ namespace ImageShrinker
             if (string.IsNullOrWhiteSpace(_model.FilePath) || _model.RequestedSize <= 0)
                 return;
 
-            var shrinker = new ImageShrinkHelper(_model.FilePath, _model.RequestedSize);
+            var shrinker = new ImageShrinkBatcher(_model.FilePath, _model.RequestedSize);
             shrinker.DoShrink();
         }
 

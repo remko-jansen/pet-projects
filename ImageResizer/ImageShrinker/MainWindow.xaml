@@ -13,7 +13,7 @@
             <Image x:Name="ImagePreview" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Height="96" Margin="1,1,0,0"/>
         </Border>
         <Label Content="_Input image:" HorizontalAlignment="Left" Margin="115,8,0,0" VerticalAlignment="Top" Target="{Binding ElementName=InputImageFile, Mode=OneWay}"/>
-        <TextBox x:Name="InputImageFile" HorizontalAlignment="Left" Height="23" Margin="196,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="306" TextChanged="InputImageFile_TextChanged" Text="{Binding FilePath}"/>
+        <TextBox x:Name="InputImageFile" HorizontalAlignment="Left" Height="23" Margin="196,10,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="306" TextChanged="InputImageFile_TextChanged" Text="{Binding FilePath}"/>
         <Label Content="_Resize longest side to:" HorizontalAlignment="Left" Margin="115,38,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.026,0.115" Target="{Binding ElementName=RequestedSize, Mode=OneWay}"/>
         <ComboBox x:Name="RequestedSize" HorizontalAlignment="Left" Margin="247,42,0,0" VerticalAlignment="Top" Width="79" IsEditable="True" ItemsSource="{Binding PredefinedSizes}">
             <ComboBox.Text>

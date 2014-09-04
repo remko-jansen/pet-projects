@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -27,55 +28,35 @@ namespace ImageShrinker
         private static readonly Type DefaultEncoderType = typeof(JpegBitmapEncoder);
 
         private readonly int _encoderQualityLevel;
-        private readonly Size _targetSize;
+        private bool _encoderDefaulted = false;
 
-        public ShrinkingService(Size targetSize, int encoderQualityLevel = 85)
+        public ShrinkingService(int encoderQualityLevel = 85)
         {
             Debug.Assert(encoderQualityLevel >= 1 && encoderQualityLevel <= 100);
-            Debug.Assert(targetSize != null);
 
             _encoderQualityLevel = encoderQualityLevel;
-            _targetSize = targetSize;
         }
 
-        public string Resize(string sourcePath)
+        public string Shrink(string sourcePath, int targetSize)
         {
             Debug.Assert(!String.IsNullOrWhiteSpace(sourcePath));
+            Debug.Assert(targetSize > 0);
 
-            var encoderDefaulted = false;
             BitmapDecoder decoder;
-
-            using (var sourceStream = File.OpenRead(sourcePath))
-            {
-                // NOTE: Using BitmapCacheOption.OnLoad here will read the entire file into
-                //       memory which allows us to dispose of the file stream immediately
-                decoder = BitmapDecoder.Create(sourceStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-            }
-
-            var encoder = BitmapEncoder.Create(decoder.CodecInfo.ContainerFormat);
-
-            try
-            {
-                // NOTE: This will throw if the codec dose not support encoding
-                var _ = encoder.CodecInfo;
-            }
-            catch (NotSupportedException)
-            {
-                // Fallback to JPEG encoder
-                encoder = (BitmapEncoder)Activator.CreateInstance(DefaultEncoderType);
-                encoderDefaulted = true;
-            }
-
-            // TODO: Copy container-level metadata if codec supports it
-            SetEncoderSettings(encoder);
-
-            string destinationPath = null;
+            BitmapEncoder encoder;
+            GetBitmapDecoderEncoder(sourcePath, out decoder, out encoder);
+            if (decoder == null || encoder == null)
+                throw new ArgumentException("Image type is not supported.");
 
             // NOTE: grab its first (and usually only) frame. Only TIFF and GIF images support multiple frames
             var sourceFrame = decoder.Frames[0];
 
             // Apply the transform
-            var transform = GetTransform(sourceFrame);
+            var steps = new StepCalculator().GetSteps(new Size(sourceFrame.PixelWidth, sourceFrame.PixelHeight), targetSize);
+            if (steps == null || steps.Count == 1)
+                return sourcePath;
+
+            var transform = GetTransform(sourceFrame, steps.Last());
             var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
 
             // Create the destination frame
@@ -86,18 +67,20 @@ namespace ImageShrinker
 
             encoder.Frames.Add(destinationFrame);
 
-            // Set the destination path using the first frame
-            if (destinationPath == null)
-            {
-                if (encoderDefaulted)
-                {
-                    sourcePath = Path.ChangeExtension(sourcePath, DefaultEncoderExtension);
-                }
+            return SaveResultToFile(sourcePath, encoder);
+        }
 
-                destinationPath = sourcePath;
+        private string SaveResultToFile(string sourcePath, BitmapEncoder encoder)
+        {
+            string destinationPath = null;
+
+            destinationPath = sourcePath;
+            if (_encoderDefaulted)
+            {
+                destinationPath = Path.ChangeExtension(sourcePath, DefaultEncoderExtension);
             }
 
-            using (var destinationStream = File.OpenWrite(destinationPath))
+            using (var destinationStream = File.Open(destinationPath, FileMode.Create))
             {
                 // Save the final image
                 encoder.Save(destinationStream);
@@ -106,45 +89,44 @@ namespace ImageShrinker
             return destinationPath;
         }
 
-        private void SetEncoderSettings(BitmapEncoder encoder)
+        private void GetBitmapDecoderEncoder(string sourcePath, out BitmapDecoder decoder, out BitmapEncoder encoder)
         {
-            Debug.Assert(encoder != null);
+            using (var sourceStream = File.OpenRead(sourcePath))
+            {
+                // NOTE: Using BitmapCacheOption.OnLoad here will read the entire file into
+                //       memory which allows us to dispose of the file stream immediately
+                decoder = BitmapDecoder.Create(sourceStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            }
 
+            encoder = BitmapEncoder.Create(decoder.CodecInfo.ContainerFormat);
+
+            try
+            {
+                // NOTE: This will throw if the codec dose not support encoding
+                var dummy = encoder.CodecInfo;
+            }
+            catch (NotSupportedException)
+            {
+                // Fallback to the default (JPEG) encoder
+                encoder = (BitmapEncoder)Activator.CreateInstance(DefaultEncoderType);
+                _encoderDefaulted = true;
+            }
+
+            // TODO: Copy container-level metadata if codec supports it
             var jpegEncoder = encoder as JpegBitmapEncoder;
-
             if (jpegEncoder != null)
             {
                 jpegEncoder.QualityLevel = _encoderQualityLevel;
             }
         }
 
-        private Transform GetTransform(BitmapSource source)
+        private Transform GetTransform(BitmapSource source, Size targetSize)
         {
             Debug.Assert(source != null);
+            Debug.Assert(targetSize != null);
 
-            var width = _targetSize.Width;
-            var height = _targetSize.Height;
-
-            if ((width > height) != (source.PixelWidth > source.PixelHeight))
-            {
-                var temp = width;
-                width = height;
-                height = temp;
-            }
-
-            var scaleX = width / ((double)source.PixelWidth);
-            var scaleY = height / ((double)source.PixelHeight);
-
-            var minScale = Math.Min(scaleX, scaleY);
-
-            scaleX = minScale;
-            scaleY = minScale;
-
-            if (scaleX > 1.0)
-            {
-                scaleX = 1.0;
-                scaleY = 1.0;
-            }
+            var scaleX = targetSize.Width / ((double)source.PixelWidth);
+            var scaleY = targetSize.Height / ((double)source.PixelHeight);
 
             return new ScaleTransform(scaleX, scaleY);
         }  
