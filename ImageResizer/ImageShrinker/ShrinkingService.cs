@@ -1,8 +1,8 @@
-﻿//------------------------------------------------------------------------------
-// Code copied from "Image Resizer for windows".
+﻿// This class is based on code from "Image Resizer for windows".
 // Image Resizer for Windows is a utility that lets you resize one or more selected image files directly from Windows Explorer by right-clicking.
 // http://imageresizer.codeplex.com/
-//
+
+//------------------------------------------------------------------------------
 // <copyright file="ResizingService.cs" company="Brice Lambson">
 //     Copyright (c) 2011-2013 Brice Lambson. All rights reserved.
 //
@@ -14,7 +14,6 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;

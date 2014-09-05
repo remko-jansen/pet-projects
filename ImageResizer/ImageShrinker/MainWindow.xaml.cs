@@ -14,12 +14,12 @@ namespace ImageShrinker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Model _model;
+        private readonly SelectedFileModel _model;
 
         public MainWindow()
         {
             InitializeComponent();
-            _model = new Model {RequestedSize = 1024};
+            _model = new SelectedFileModel {RequestedSize = 1024};
 
             DataContext = _model;
         }
