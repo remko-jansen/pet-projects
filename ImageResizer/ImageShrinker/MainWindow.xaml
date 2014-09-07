@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:ImageShrinker"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:SelectedFileModel}"
-        Title="Image shrinker" Height="224" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
+        Title="Image shrinker" Height="177" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
 
-    <Grid Margin="0,0,0,0">
+    <Grid Margin="0,0,0,0" IsEnabled="{Binding Idle}">
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="100" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <Image x:Name="ImagePreview" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Height="96" Margin="1,1,0,0"/>
         </Border>
-        <Label Content="_Input image:" HorizontalAlignment="Left" Margin="115,10,0,0" VerticalAlignment="Top" Target="{Binding ElementName=InputImageFile, Mode=OneWay}"/>
-        <TextBox x:Name="InputImageFile" HorizontalAlignment="Left" Margin="191,12,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="306" TextChanged="InputImageFile_TextChanged" Text="{Binding FilePath}" Height="22"/>
-        <Button Content="Browse..." HorizontalAlignment="Left" Margin="517,12,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Label Content="_Input image:" HorizontalAlignment="Left" Margin="115,10,0,0" VerticalAlignment="Top" Target="{Binding ElementName=SelectedFile, Mode=OneWay}"/>
+        <TextBox x:Name="SelectedFile" HorizontalAlignment="Left" Margin="191,12,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="306" TextChanged="SelectedFile_TextChanged" Text="{Binding SelectedFile}" Height="22"/>
+        <Button x:Name="BrowseButton" Content="Browse..." HorizontalAlignment="Left" Margin="517,12,0,0" VerticalAlignment="Top" Width="75" Click="BrowseButton_Click"/>
         <Label Content="_Resize longest side to:" HorizontalAlignment="Left" Margin="115,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.026,0.115" Target="{Binding ElementName=RequestedSize, Mode=OneWay}"/>
         <ComboBox x:Name="RequestedSize" HorizontalAlignment="Left" Margin="247,41,0,0" VerticalAlignment="Top" Width="79" IsEditable="True" ItemsSource="{Binding PredefinedSizes}">
             <ComboBox.Text>
@@ -46,5 +46,6 @@
             </Border.BorderBrush>
         </Border>
         <CheckBox Content="Overwrite original file" HorizontalAlignment="Left" Margin="121,70,0,0" VerticalAlignment="Top" IsChecked="{Binding OverwriteOriginal}"/>
+        <ProgressBar HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="582" Height="12"/>
     </Grid>
 </Window>

@@ -6,20 +6,19 @@ namespace ImageShrinker
 {
     public class ImageShrinkBatcher
     {
-        private string _imageFilePath;
-        private int _requestedSize;
+        private SelectedFileModel _model;
 
-        public ImageShrinkBatcher(string imageFilePath, int requestedSize)
+        public ImageShrinkBatcher(SelectedFileModel model)
         {
-            _imageFilePath = imageFilePath;
-            _requestedSize = requestedSize;
+            _model = model;
         }
 
         public void DoShrink()
         {
-            var service = new ShrinkingService();
+            var renamer = new RenamingService("{0} ({1}px)", _model.OverwriteOriginal, _model.RequestedSize);
+            var service = new ShrinkingService(renamer);
 
-            service.Shrink(_imageFilePath, _requestedSize);
+            service.Shrink(_model.SelectedFile, _model.RequestedSize);
         }
 
     }

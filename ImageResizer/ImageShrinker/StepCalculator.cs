@@ -8,7 +8,7 @@ namespace ImageShrinker
     {
         private int _stepPercentage;
 
-        public const int DefaultStepPercentage = 20;
+        public const int DefaultStepPercentage = 25;
         public const int MaxSteps = 100;
 
         public StepCalculator()

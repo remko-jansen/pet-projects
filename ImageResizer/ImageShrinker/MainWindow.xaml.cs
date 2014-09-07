@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using System.Collections.Generic;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
@@ -30,7 +31,14 @@ namespace ImageShrinker
 
             if (files.Length > 0)
             {
-                _model.FilePath = files[0];
+                _model.DroppedFiles = new List<string>(files);
+                _model.SelectedFile = "";
+                _model.Busy = true;
+
+                var shrinker = new ImageShrinkBatcher(_model);
+                shrinker.DoShrink();
+
+                _model.Busy = false;
             }
         }
 
@@ -43,12 +51,12 @@ namespace ImageShrinker
             }
         }
 
-        private void InputImageFile_TextChanged(object sender, TextChangedEventArgs e)
+        private void SelectedFile_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = sender as TextBox;
 
             ImagePreview.Source = null;
-            if (tb != null)
+            if (tb != null && !string.IsNullOrWhiteSpace(tb.Text))
             {
                 var image = GetImageFromFile(tb.Text);
                 if (image != null)
@@ -84,27 +92,32 @@ namespace ImageShrinker
 
         private void ShrinkIt_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_model.FilePath) || _model.RequestedSize <= 0)
+            if (string.IsNullOrWhiteSpace(_model.SelectedFile) || _model.RequestedSize <= 0)
                 return;
 
-            var shrinker = new ImageShrinkBatcher(_model.FilePath, _model.RequestedSize);
+            _model.DroppedFiles.Clear();
+            _model.Busy = true;
+
+            var shrinker = new ImageShrinkBatcher(_model);
             shrinker.DoShrink();
+
+            _model.Busy = false;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             // Create OpenFileDialog
             var dlg = new OpenFileDialog();
 
             // Set filter for file extension and default file extension
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Images|*.jpg;*.jpeg|All Files|*.*";
+            dlg.Filter = "Images|*.jpg;*.jpeg;*.png|All Files|*.*";
             dlg.CheckFileExists = true;
 
             var result = dlg.ShowDialog();
             if (result == true)
             {
-                _model.FilePath = dlg.FileName;
+                _model.SelectedFile = dlg.FileName;
             }
 
         }

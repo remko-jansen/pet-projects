@@ -24,18 +24,16 @@ namespace ImageShrinker
         private const string UniqueFileNameFormat = "{0} ({1})";
 
         private readonly string _fileNameFormat;
-        private readonly string _outputDirectory;
-        private readonly bool _replaceOriginals;
+        private readonly bool _overwriteOriginals;
         private readonly int _targetSize;
 
-        public RenamingService(string fileNameFormat, string outputDirectory, bool replaceOriginals, int targetSize)
+        public RenamingService(string fileNameFormat, bool overwriteOriginals, int targetSize)
         {
             Debug.Assert(!String.IsNullOrWhiteSpace(fileNameFormat));
             Debug.Assert(fileNameFormat.Contains("{0}"));
             
             _fileNameFormat = fileNameFormat;
-            _outputDirectory = outputDirectory;
-            _replaceOriginals = replaceOriginals;
+            _overwriteOriginals = overwriteOriginals;
             _targetSize = targetSize;
         }
 
@@ -43,14 +41,12 @@ namespace ImageShrinker
         {
             Debug.Assert(!String.IsNullOrWhiteSpace(sourcePath));
 
-            if (_outputDirectory == null && _replaceOriginals)
+            if (_overwriteOriginals)
             {
                 return sourcePath;
             }
 
-            var directoryName
-                = _outputDirectory
-                    ?? Path.GetDirectoryName(sourcePath);
+            var directoryName = Path.GetDirectoryName(sourcePath);
             var fileName = Path.GetFileNameWithoutExtension(sourcePath);
             var extension = Path.GetExtension(sourcePath);
 

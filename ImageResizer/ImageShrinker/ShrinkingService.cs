@@ -27,13 +27,14 @@ namespace ImageShrinker
         private static readonly Type DefaultEncoderType = typeof(JpegBitmapEncoder);
 
         private readonly int _encoderQualityLevel;
-        private bool _encoderDefaulted = false;
+        private readonly RenamingService _renamer;
 
-        public ShrinkingService(int encoderQualityLevel = 85)
+        public ShrinkingService(RenamingService renamer, int encoderQualityLevel = 85)
         {
             Debug.Assert(encoderQualityLevel >= 1 && encoderQualityLevel <= 100);
 
             _encoderQualityLevel = encoderQualityLevel;
+            _renamer = renamer;
         }
 
         public string Shrink(string sourcePath, int targetSize)
@@ -55,14 +56,20 @@ namespace ImageShrinker
             if (steps == null || steps.Count == 1)
                 return sourcePath;
 
-            var transform = GetTransform(sourceFrame, steps.Last());
-            var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
+            BitmapFrame destinationFrame = null;
+            for (var i = 1; i < steps.Count; i++)
+            {
+                var transform = GetTransform(sourceFrame, steps[i]);
+                var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
 
-            // Create the destination frame
-            var thumbnail = sourceFrame.Thumbnail;
-            var metadata = sourceFrame.Metadata as BitmapMetadata;
-            var colorContexts = sourceFrame.ColorContexts;
-            var destinationFrame = BitmapFrame.Create(transformedBitmap, thumbnail, metadata, colorContexts);
+                // Create the destination frame
+                var thumbnail = sourceFrame.Thumbnail;
+                var metadata = sourceFrame.Metadata as BitmapMetadata;
+                var colorContexts = sourceFrame.ColorContexts;
+                destinationFrame = BitmapFrame.Create(transformedBitmap, thumbnail, metadata, colorContexts);
+
+                sourceFrame = destinationFrame;
+            }
 
             encoder.Frames.Add(destinationFrame);
 
@@ -71,12 +78,11 @@ namespace ImageShrinker
 
         private string SaveResultToFile(string sourcePath, BitmapEncoder encoder)
         {
-            string destinationPath = null;
+            string destinationPath = _renamer.Rename(sourcePath);
 
-            destinationPath = sourcePath;
-            if (_encoderDefaulted)
+            if (encoder.GetType() == DefaultEncoderType)
             {
-                destinationPath = Path.ChangeExtension(sourcePath, DefaultEncoderExtension);
+                destinationPath = Path.ChangeExtension(destinationPath, DefaultEncoderExtension);
             }
 
             using (var destinationStream = File.Open(destinationPath, FileMode.Create))
@@ -101,17 +107,16 @@ namespace ImageShrinker
 
             try
             {
-                // NOTE: This will throw if the codec dose not support encoding
+                // NOTE: This will throw if the codec does not support encoding
                 var dummy = encoder.CodecInfo;
             }
             catch (NotSupportedException)
             {
                 // Fallback to the default (JPEG) encoder
                 encoder = (BitmapEncoder)Activator.CreateInstance(DefaultEncoderType);
-                _encoderDefaulted = true;
             }
 
-            // TODO: Copy container-level metadata if codec supports it
+            // Set encoder quality if it is a jpeg encoder
             var jpegEncoder = encoder as JpegBitmapEncoder;
             if (jpegEncoder != null)
             {

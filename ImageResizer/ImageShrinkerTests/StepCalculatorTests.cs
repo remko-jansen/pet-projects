@@ -1,8 +1,8 @@
-﻿using System.Drawing;
-using System.Linq;
-using ImageShrinker;
+﻿using ImageShrinker;
 using NUnit.Framework;
 using SharpTestsEx;
+using System.Drawing;
+using System.Linq;
 
 namespace ImageShrinkerTests
 {
