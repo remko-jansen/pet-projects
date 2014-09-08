@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
+using ImageShrinker.ViewModel;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -15,12 +17,12 @@ namespace ImageShrinker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly SelectedFileModel _model;
+        private readonly SelectedFileViewModel _model;
 
         public MainWindow()
         {
             InitializeComponent();
-            _model = new SelectedFileModel {RequestedSize = 1024};
+            _model = new SelectedFileViewModel {RequestedSize = 1024};
 
             DataContext = _model;
         }
@@ -33,12 +35,9 @@ namespace ImageShrinker
             {
                 _model.DroppedFiles = new List<string>(files);
                 _model.SelectedFile = "";
-                _model.Busy = true;
 
                 var shrinker = new ImageShrinkBatcher(_model);
                 shrinker.DoShrink();
-
-                _model.Busy = false;
             }
         }
 
@@ -55,20 +54,23 @@ namespace ImageShrinker
         {
             var tb = sender as TextBox;
 
-            ImagePreview.Source = null;
+            ImageSource image = null;
             if (tb != null && !string.IsNullOrWhiteSpace(tb.Text))
             {
-                var image = GetImageFromFile(tb.Text);
-                if (image != null)
-                {
-                    ImagePreview.Source = image;
-                }
+                image = GetImageFromFile(tb.Text);
             }
+
+            if (image == null)
+            {
+                image = ResourceHelper.LoadBitmapFromResource("Images/DragHere.png");
+            }
+
+            ImagePreview.Source = image;
         }
 
-        private BitmapFrame GetImageFromFile(string path)
+        private ImageSource GetImageFromFile(string path)
         {
-            BitmapFrame result = null;
+            ImageSource result = null;
 
             try
             {
@@ -84,7 +86,7 @@ namespace ImageShrinker
             }
             catch (Exception)
             {
-                result = null;
+                return null;
             }
 
             return result;
@@ -96,12 +98,9 @@ namespace ImageShrinker
                 return;
 
             _model.DroppedFiles.Clear();
-            _model.Busy = true;
 
             var shrinker = new ImageShrinkBatcher(_model);
             shrinker.DoShrink();
-
-            _model.Busy = false;
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -119,7 +118,6 @@ namespace ImageShrinker
             {
                 _model.SelectedFile = dlg.FileName;
             }
-
         }
     }
 }

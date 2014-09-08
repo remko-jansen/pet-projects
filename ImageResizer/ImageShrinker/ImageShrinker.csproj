@@ -55,11 +55,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="RenamingService.cs" />
+    <Compile Include="ResourceHelper.cs" />
     <Compile Include="ShrinkingService.cs" />
     <Compile Include="StringToIntValidationRule.cs" />
-    <Compile Include="SelectedFileModel.cs" />
-    <Compile Include="NotificationModel.cs" />
     <Compile Include="StepCalculator.cs" />
+    <Compile Include="ViewModel\BaseNotificationModel.cs" />
+    <Compile Include="ViewModel\ProgressViewModel.cs" />
+    <Compile Include="ViewModel\SelectedFileViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\DragHere.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

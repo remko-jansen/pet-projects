@@ -27,20 +27,22 @@ namespace ImageShrinker
         private static readonly Type DefaultEncoderType = typeof(JpegBitmapEncoder);
 
         private readonly int _encoderQualityLevel;
+        private readonly int _targetSize;
         private readonly RenamingService _renamer;
 
-        public ShrinkingService(RenamingService renamer, int encoderQualityLevel = 85)
+        public ShrinkingService(RenamingService renamer, int targetSize, int encoderQualityLevel = 85)
         {
             Debug.Assert(encoderQualityLevel >= 1 && encoderQualityLevel <= 100);
+            Debug.Assert(targetSize > 0);
 
             _encoderQualityLevel = encoderQualityLevel;
+            _targetSize = targetSize;
             _renamer = renamer;
         }
 
-        public string Shrink(string sourcePath, int targetSize)
+        public string Shrink(string sourcePath)
         {
             Debug.Assert(!String.IsNullOrWhiteSpace(sourcePath));
-            Debug.Assert(targetSize > 0);
 
             BitmapDecoder decoder;
             BitmapEncoder encoder;
@@ -52,24 +54,14 @@ namespace ImageShrinker
             var sourceFrame = decoder.Frames[0];
 
             // Apply the transform
-            var steps = new StepCalculator().GetSteps(new Size(sourceFrame.PixelWidth, sourceFrame.PixelHeight), targetSize);
-            if (steps == null || steps.Count == 1)
-                return sourcePath;
+            var transform = GetTransform(sourceFrame);
+            var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
 
-            BitmapFrame destinationFrame = null;
-            for (var i = 1; i < steps.Count; i++)
-            {
-                var transform = GetTransform(sourceFrame, steps[i]);
-                var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
-
-                // Create the destination frame
-                var thumbnail = sourceFrame.Thumbnail;
-                var metadata = sourceFrame.Metadata as BitmapMetadata;
-                var colorContexts = sourceFrame.ColorContexts;
-                destinationFrame = BitmapFrame.Create(transformedBitmap, thumbnail, metadata, colorContexts);
-
-                sourceFrame = destinationFrame;
-            }
+            // Create the destination frame
+            var thumbnail = sourceFrame.Thumbnail;
+            var metadata = sourceFrame.Metadata as BitmapMetadata;
+            var colorContexts = sourceFrame.ColorContexts;
+            var destinationFrame = BitmapFrame.Create(transformedBitmap, thumbnail, metadata, colorContexts);
 
             encoder.Frames.Add(destinationFrame);
 
@@ -124,15 +116,22 @@ namespace ImageShrinker
             }
         }
 
-        private Transform GetTransform(BitmapSource source, Size targetSize)
+        private Transform GetTransform(BitmapSource source)
         {
             Debug.Assert(source != null);
-            Debug.Assert(targetSize != null);
 
-            var scaleX = targetSize.Width / ((double)source.PixelWidth);
-            var scaleY = targetSize.Height / ((double)source.PixelHeight);
+            // Use the longest side of the image to calculate how much it must be scaled to reach the target size. 
+            double scale;
+            if (source.PixelWidth > source.PixelHeight)
+            {
+                scale = _targetSize/((double) source.PixelWidth);
+            }
+            else
+            {
+                scale = _targetSize/((double) source.PixelHeight);
+            }
 
-            return new ScaleTransform(scaleX, scaleY);
+            return new ScaleTransform(scale, scale);
         }  
     }
 }

@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace ImageShrinker
+namespace ImageShrinker.ViewModel
 {
-    public abstract class NotificationModel : INotifyPropertyChanged
+    public abstract class BaseNotificationModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

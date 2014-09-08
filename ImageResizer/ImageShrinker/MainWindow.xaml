@@ -4,13 +4,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:ImageShrinker"
+        xmlns:viewModel="clr-namespace:ImageShrinker.ViewModel"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance local:SelectedFileModel}"
+        d:DataContext="{d:DesignInstance viewModel:SelectedFileViewModel}"
         Title="Image shrinker" Height="177" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <BitmapImage x:Key="DragHereIcon" UriSource="/Images/DragHere.png"/>
+    </Window.Resources>
 
     <Grid Margin="0,0,0,0" IsEnabled="{Binding Idle}">
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="100" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
-            <Image x:Name="ImagePreview" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Height="96" Margin="1,1,0,0"/>
+            <Image x:Name="ImagePreview" Source="{StaticResource DragHereIcon}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Height="96" Margin="1,1,0,0"/>
         </Border>
         <Label Content="_Input image:" HorizontalAlignment="Left" Margin="115,10,0,0" VerticalAlignment="Top" Target="{Binding ElementName=SelectedFile, Mode=OneWay}"/>
         <TextBox x:Name="SelectedFile" HorizontalAlignment="Left" Margin="191,12,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="306" TextChanged="SelectedFile_TextChanged" Text="{Binding SelectedFile}" Height="22"/>
@@ -25,6 +31,7 @@
                 </Binding>
             </ComboBox.Text>
         </ComboBox>
+        <CheckBox Content="Overwrite original file" HorizontalAlignment="Left" Margin="121,70,0,0" VerticalAlignment="Top" IsChecked="{Binding OverwriteOriginal}"/>
         <Button x:Name="ShrinkIt" Content="Shrink It" HorizontalAlignment="Left" Margin="517,88,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.253,0.136" Click="ShrinkIt_Click">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
@@ -45,7 +52,6 @@
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
             </Border.BorderBrush>
         </Border>
-        <CheckBox Content="Overwrite original file" HorizontalAlignment="Left" Margin="121,70,0,0" VerticalAlignment="Top" IsChecked="{Binding OverwriteOriginal}"/>
-        <ProgressBar HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="582" Height="12"/>
+        <ProgressBar HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="582" Height="12" IsIndeterminate="{Binding Progress.IsIndeterminate}" Maximum="{Binding Progress.MaximumSteps}" Value="{Binding Progress.CurrentStep}" Visibility="{Binding Busy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </Window>

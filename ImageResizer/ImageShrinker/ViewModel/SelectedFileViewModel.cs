@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Windows.Documents;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ImageShrinker
+namespace ImageShrinker.ViewModel
 {
-    public class SelectedFileModel : NotificationModel
+    public class SelectedFileViewModel : BaseNotificationModel
     {
         private string _selectedFile;
         private int _requestedSize;
@@ -11,15 +11,18 @@ namespace ImageShrinker
         private List<string> _droppedFiles;
         private List<int> _predefinedSizes;
 
+        private ProgressViewModel _progress;
+
         private bool _busy;
         private bool _idle;
 
-        public SelectedFileModel()
+        public SelectedFileViewModel()
         {
             _predefinedSizes = new List<int> { 1024, 1280, 1600, 2048 };
             _droppedFiles = new List<string>();
             _requestedSize = 2048;
             Busy = false;
+            Progress = new ProgressViewModel();
         }
 
         public string SelectedFile
@@ -63,8 +66,14 @@ namespace ImageShrinker
 
         public bool Idle
         {
-            get { return !_busy; }
+            get { return _idle; }
             set { Set(() => Idle, ref _idle, value); }
+        }
+
+        public ProgressViewModel Progress
+        {
+            get { return _progress; }
+            set { Set(() => Progress, ref _progress, value); }
         }
     }
 }
