@@ -24,7 +24,7 @@
         <Label Content="_Resize longest side to:" HorizontalAlignment="Left" Margin="115,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.026,0.115" Target="{Binding ElementName=RequestedSize, Mode=OneWay}"/>
         <ComboBox x:Name="RequestedSize" HorizontalAlignment="Left" Margin="247,41,0,0" VerticalAlignment="Top" Width="79" IsEditable="True" ItemsSource="{Binding PredefinedSizes}">
             <ComboBox.Text>
-                <Binding Path="RequestedSize" UpdateSourceTrigger="PropertyChanged">
+                <Binding Path="RequestedSize" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay">
                     <Binding.ValidationRules>
                         <local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
                     </Binding.ValidationRules>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using ImageShrinker.ViewModel;
 using Microsoft.Win32;
 using System;
@@ -22,12 +23,12 @@ namespace ImageShrinker
         public MainWindow()
         {
             InitializeComponent();
-            _model = new SelectedFileViewModel {RequestedSize = 1024};
+            _model = new SelectedFileViewModel();
 
             DataContext = _model;
         }
 
-        private void Window_Drop(object sender, DragEventArgs e)
+        private async void Window_Drop(object sender, DragEventArgs e)
         {
             var files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
@@ -37,7 +38,7 @@ namespace ImageShrinker
                 _model.SelectedFile = "";
 
                 var shrinker = new ImageShrinkBatcher(_model);
-                shrinker.DoShrink();
+                await Task.Run(() => shrinker.DoShrink());
             }
         }
 
@@ -92,7 +93,7 @@ namespace ImageShrinker
             return result;
         }
 
-        private void ShrinkIt_Click(object sender, RoutedEventArgs e)
+        private async void ShrinkIt_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(_model.SelectedFile) || _model.RequestedSize <= 0)
                 return;
@@ -100,7 +101,7 @@ namespace ImageShrinker
             _model.DroppedFiles.Clear();
 
             var shrinker = new ImageShrinkBatcher(_model);
-            shrinker.DoShrink();
+            await Task.Run(() => shrinker.DoShrink());
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
