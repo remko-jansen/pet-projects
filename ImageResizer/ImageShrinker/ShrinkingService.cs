@@ -131,6 +131,9 @@ namespace ImageShrinker
                 scale = _targetSize/((double) source.PixelHeight);
             }
 
+            if (scale > 1.0)
+                scale = 1.0;
+
             return new ScaleTransform(scale, scale);
         }  
     }

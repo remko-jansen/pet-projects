@@ -38,7 +38,7 @@ namespace ImageShrinker
                 _model.SelectedFile = "";
 
                 var shrinker = new ImageShrinkBatcher(_model);
-                await Task.Run(() => shrinker.DoShrink());
+                await shrinker.DoShrinkAsync();
             }
         }
 
@@ -101,7 +101,7 @@ namespace ImageShrinker
             _model.DroppedFiles.Clear();
 
             var shrinker = new ImageShrinkBatcher(_model);
-            await Task.Run(() => shrinker.DoShrink());
+            await shrinker.DoShrinkAsync();
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)

@@ -15,19 +15,26 @@ namespace ImageShrinker
             _model = model;
         }
 
-        public void DoShrink()
+        public async Task DoShrinkAsync()
         {
+            List<string> filesToShrink = null;
+
             if (!string.IsNullOrWhiteSpace(_model.SelectedFile))
             {
-                ShrinkFiles(new List<string> { _model.SelectedFile });
+                filesToShrink = new List<string> { _model.SelectedFile };
             }
             else if (_model.DroppedFiles != null && _model.DroppedFiles.Count > 0)
             {
-                ShrinkFiles(_model.DroppedFiles);
+                filesToShrink = _model.DroppedFiles;
             }
+
+            if (filesToShrink == null || filesToShrink.Count == 0)
+                return;
+
+            await Task.Run(() => ShrinkFiles(filesToShrink));
         }
 
-        private void ShrinkFiles(List<string> files)
+        private void ShrinkFiles(IReadOnlyCollection<string> files)
         {
             Debug.Assert(files != null);
             Debug.Assert(files.Count > 0);
