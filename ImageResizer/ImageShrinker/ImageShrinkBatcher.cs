@@ -44,7 +44,8 @@ namespace ImageShrinker
 
             _model.Busy = true;
             _model.Progress.Reset();
-            _model.Progress.MaximumSteps = files.Count;
+            _model.Progress.MaximumSteps = files.Count+1;
+            _model.Progress.CurrentStep = 1;
 
             foreach (var file in files)
             {

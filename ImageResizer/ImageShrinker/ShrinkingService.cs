@@ -40,7 +40,7 @@ namespace ImageShrinker
             _renamer = renamer;
         }
 
-        public string Shrink(string sourcePath)
+        public void Shrink(string sourcePath)
         {
             Debug.Assert(!String.IsNullOrWhiteSpace(sourcePath));
 
@@ -55,6 +55,10 @@ namespace ImageShrinker
 
             // Apply the transform
             var transform = GetTransform(sourceFrame);
+
+            if (transform == null)
+                return;
+
             var transformedBitmap = new TransformedBitmap(sourceFrame, transform);
 
             // Create the destination frame
@@ -65,7 +69,7 @@ namespace ImageShrinker
 
             encoder.Frames.Add(destinationFrame);
 
-            return SaveResultToFile(sourcePath, encoder);
+            SaveResultToFile(sourcePath, encoder);
         }
 
         private string SaveResultToFile(string sourcePath, BitmapEncoder encoder)
@@ -132,7 +136,7 @@ namespace ImageShrinker
             }
 
             if (scale > 1.0)
-                scale = 1.0;
+                return null;
 
             return new ScaleTransform(scale, scale);
         }  
