@@ -25,6 +25,7 @@ namespace ImageShrinker.ViewModel
             MaximumSteps = 0;
             CurrentStep = 0;
             IsIndeterminate = false;
+            ClearMessages();
         }
         
         public int MaximumSteps

@@ -43,8 +43,8 @@ namespace ImageShrinker
             var shrinker = new ShrinkingService(renamer, _model.RequestedSize);
 
             _model.Busy = true;
+            _model.Progress.Reset();
             _model.Progress.MaximumSteps = files.Count;
-            _model.Progress.CurrentStep = 0;
 
             foreach (var file in files)
             {
@@ -61,7 +61,6 @@ namespace ImageShrinker
             }
 
             _model.Busy = false;
-            _model.Progress.Reset();
         }
     }
 }
