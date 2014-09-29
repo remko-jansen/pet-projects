@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Media;
+using System.Windows.Shell;
+using System.Windows.Threading;
 
 namespace ImageShrinker.ViewModel
 {
@@ -11,6 +14,8 @@ namespace ImageShrinker.ViewModel
         private bool _isIndeterminate;
         private readonly List<string> _messages;
         private readonly Object _messagesLock = new Object();
+
+        private TaskbarItemInfo _taskbarItemInfo;
 
         public ProgressViewModel()
         {
@@ -26,8 +31,15 @@ namespace ImageShrinker.ViewModel
             CurrentStep = 0;
             IsIndeterminate = false;
             ClearMessages();
+            ResetTaskBarProgress();
         }
-        
+
+        public TaskbarItemInfo TaskbarItemInfo
+        {
+            get { return _taskbarItemInfo; }
+            set { _taskbarItemInfo = value; }
+        }
+
         public int MaximumSteps
         {
             get { return _maximumSteps; }
@@ -37,7 +49,11 @@ namespace ImageShrinker.ViewModel
         public int CurrentStep
         {
             get { return _currentStep; }
-            set { Set(() => CurrentStep, ref _currentStep, value); }
+            set
+            {
+                Set(() => CurrentStep, ref _currentStep, value);
+                UpdateTaskBarProgress();
+            }
         }
 
         public bool IsIndeterminate
@@ -79,6 +95,35 @@ namespace ImageShrinker.ViewModel
                 _messages.Clear();
             }
             OnPropertyChanged(GetPropertyName(() => Messages));
+        }
+
+        private void UpdateTaskBarProgress()
+        {
+            if (_taskbarItemInfo != null)
+            {
+                var state = TaskbarItemProgressState.None;
+                double progress = 0;
+
+                if (_currentStep != 0)
+                {
+                    progress = _currentStep / ((double)_maximumSteps);
+                    state = TaskbarItemProgressState.Normal;
+                }
+
+                _taskbarItemInfo.Dispatcher.Invoke(new Action(() => {
+                                                                        _taskbarItemInfo.ProgressState = state;
+                                                                        _taskbarItemInfo.ProgressValue = progress;
+                                                                    }
+                                                             ));
+            }
+        }
+
+        private void ResetTaskBarProgress()
+        {
+            if (_taskbarItemInfo != null)
+            {
+                _taskbarItemInfo.Dispatcher.Invoke(new Action(() => _taskbarItemInfo.ProgressState = TaskbarItemProgressState.None));
+            }
         }
 
     }

@@ -62,6 +62,7 @@ namespace ImageShrinker
             }
 
             _model.Busy = false;
+            _model.Progress.CurrentStep = 0;
         }
     }
 }

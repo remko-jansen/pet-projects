@@ -9,6 +9,10 @@
         d:DataContext="{d:DesignInstance viewModel:SelectedFileViewModel}"
         Title="Image shrinker" Height="177" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
 
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo/>
+    </Window.TaskbarItemInfo>
+    
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <BitmapImage x:Key="DragHereIcon" UriSource="/Images/DragHere.png"/>

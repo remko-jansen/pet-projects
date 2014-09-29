@@ -24,6 +24,7 @@ namespace ImageShrinker
         {
             InitializeComponent();
             _model = new SelectedFileViewModel();
+            _model.Progress.TaskbarItemInfo = TaskbarItemInfo;
 
             DataContext = _model;
         }
