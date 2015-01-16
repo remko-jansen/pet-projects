@@ -20,14 +20,14 @@ namespace ImageShrinker.ViewModel
         public ProgressViewModel()
         {
             _messages = new List<string>();
-            _maximumSteps = 0;
+            _maximumSteps = 1;
             _currentStep = 0;
             _isIndeterminate = false;
         }
 
         public void Reset()
         {
-            MaximumSteps = 0;
+            MaximumSteps = 1;
             CurrentStep = 0;
             IsIndeterminate = false;
             ClearMessages();

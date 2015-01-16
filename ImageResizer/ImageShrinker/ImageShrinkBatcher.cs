@@ -49,13 +49,14 @@ namespace ImageShrinker
 
             foreach (var file in files)
             {
+                _model.Progress.AddMessage(file + " -> " + renamer.Rename(file));
                 try
                 {
                     shrinker.Shrink(file);
                 }
                 catch (Exception ex)
                 {
-                    _model.Progress.AddMessage(ex.Message);
+                    _model.Progress.AddMessage("Error: " + ex.Message);
                 }
 
                 _model.Progress.CurrentStep++;

@@ -18,7 +18,7 @@ namespace ImageShrinker.ViewModel
 
         public SelectedFileViewModel()
         {
-            _predefinedSizes = new List<int> { 1024, 1280, 1600, 2048 };
+            _predefinedSizes = new List<int> { 1024, 1280, 1600, 2048, 2560, 3000 };
             _droppedFiles = new List<string>();
             _requestedSize = 2048;
             Busy = false;

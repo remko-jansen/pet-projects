@@ -7,7 +7,7 @@
         xmlns:viewModel="clr-namespace:ImageShrinker.ViewModel"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:SelectedFileViewModel}"
-        Title="Image shrinker" Height="177" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
+        Title="Image shrinker" Height="241" Width="620" Drop="Window_Drop" AllowDrop="True" DragOver="Window_DragOver">
 
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
@@ -56,6 +56,7 @@
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
             </Border.BorderBrush>
         </Border>
-        <ProgressBar HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="582" Height="12" IsIndeterminate="{Binding Progress.IsIndeterminate}" Maximum="{Binding Progress.MaximumSteps}" Value="{Binding Progress.CurrentStep}" Visibility="{Binding Busy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <ProgressBar HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="582" Height="12" IsIndeterminate="{Binding Progress.IsIndeterminate}" Maximum="{Binding Progress.MaximumSteps}" Value="{Binding Progress.CurrentStep}"/>
+        <TextBox HorizontalAlignment="Left" Height="63" Margin="10,138,0,0" IsReadOnly="True" TextWrapping="NoWrap"  Text="{Binding Progress.Messages, Mode=OneWay, ValidatesOnNotifyDataErrors=False}" VerticalAlignment="Top" Width="582" VerticalScrollBarVisibility="Auto" FontSize="10" IsUndoEnabled="False"/>
     </Grid>
 </Window>
